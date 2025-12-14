@@ -1,0 +1,28 @@
+# ----------------------------------------------------------------------
+# DOCKER VOLUMES (SENSITIVE DATA)
+# ----------------------------------------------------------------------
+# These folders contain the state, databases, certificates, and logs of 
+# your services. They are CRITICAL and must NOT be committed to a public
+# repository.
+
+# Nginx Proxy Manager (Certificates and DB)
+npm/
+
+# MariaDB (Database files for NPM)
+db/
+
+# Portainer (Configuration data)
+portainer/
+
+# AdGuard Home (Configuration and statistics)
+adguardhome/
+
+# Home Assistant (Configuration files, tokens, history database)
+homeassistant/
+
+# ----------------------------------------------------------------------
+# SECRETS AND PASSWORDS
+# ----------------------------------------------------------------------
+# The .env file contains environment variables and passwords 
+# (MYSQL_ROOT_PASSWORD, etc.). This MUST remain local.
+.env

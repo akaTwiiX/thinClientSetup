@@ -1,0 +1,85 @@
+version: '3.7'
+
+services:
+  # --- 1. NGINX PROXY MANAGER (NPM) ---
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+    environment:
+      DB_MYSQL_HOST: "db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: '${MYSQL_USER}'
+      DB_MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      DB_MYSQL_NAME: '${MYSQL_DATABASE}'
+    volumes:
+      - ./npm/data:/data
+      - ./npm/letsencrypt:/etc/letsencrypt
+    networks:
+      - proxy_net_global
+    depends_on:
+      - db
+
+  # --- 2. MARIADB (Database for NPM) ---
+  db:
+    image: 'mariadb:latest'
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - proxy_net_global
+
+  # --- 3. PORTAINER (Docker Management Tool) ---
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./portainer:/data
+    networks:
+      - proxy_net_global
+
+  # --- 4. ADGUARD HOME (DNS/DHCP) ---
+  adguardhome:
+    container_name: adguardhome
+    image: adguard/adguardhome
+    restart: unless-stopped
+    ports:
+      - '53:53/tcp'
+      - '53:53/udp'
+      - '3000:3000/tcp'
+    volumes:
+      - ./adguardhome/work:/opt/adguardhome/work
+      - ./adguardhome/conf:/opt/adguardhome/conf
+    networks:
+      - proxy_net_global
+
+  # --- 5. HOME ASSISTANT (HA) ---
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    restart: unless-stopped
+    environment:
+      TZ: 'Europe/Berlin'
+    volumes:
+      - ./homeassistant/config:/config
+    networks:
+      - proxy_net_global
+
+networks:
+  proxy_net_global:
+    driver: bridge
+    name: proxy_net_global
