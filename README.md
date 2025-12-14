@@ -35,16 +35,16 @@ Execute these steps on your new ThinClient/Mini-PC (e.g., running Ubuntu Server)
 1.  **Clone the Repository and Create Folder:**
     ```bash
     # Create the target directory and navigate to it (using the standard /opt location)
-    mkdir -p /opt/thinClient
+    sudo mkdir -p /opt/thinClient
     cd /opt/thinClient
     # Clone your repository
-    git clone [YOUR_REPO_URL] .
+    sudo git clone [YOUR_REPO_URL] .
     ```
 
 2.  **Run the Setup Script:**
     This script installs Docker, Docker Compose, and sets necessary permissions.
     ```bash
-    chmod +x setup_thinclient.sh
+    sudo chmod +x setup_thinclient.sh
     sudo ./setup_thinclient.sh
     ```
     *(Note: You may need to log out/log back in or reboot after installation for the Docker group permissions to take effect.)*
@@ -72,7 +72,7 @@ Execute these steps on your new ThinClient/Mini-PC (e.g., running Ubuntu Server)
 Start all core containers (NPM, DB, AdGuard, HA, Portainer). Docker Compose will create the necessary **`proxy_net_global`** network.
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 2.2 Initial Service Login and Setup
@@ -127,7 +127,7 @@ This process is used for moving to new hardware or restoring from a system failu
     unzip volumes_backup.zip
     ```
 
-5.  **Start:** Run `docker-compose up -d`. The system will resume with the exact state of the old ThinClient.
+5.  **Start:** Run `docker compose up -d`. The system will resume with the exact state of the old ThinClient.
 
 ---
 
@@ -158,4 +158,4 @@ networks:
     external: true # Import the existing network
 ```
 
-**Start:** Start the project independently using `docker-compose up -d` inside the project folder. It will be immediately reachable by the Nginx Proxy Manager.
+**Start:** Start the project independently using `docker compose up -d` inside the project folder. It will be immediately reachable by the Nginx Proxy Manager.

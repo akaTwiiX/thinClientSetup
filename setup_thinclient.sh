@@ -13,6 +13,23 @@ sudo apt install -y docker-compose-plugin
 echo "Setting timezone to Europe/Berlin..."
 sudo timedatectl set-timezone Europe/Berlin
 
-echo "Please configure the static IP manually in the router or Netplan to the old IP (e.g. 192.168.178.10)."
+echo "-------------------------------------------------------------------"
+echo "🌐 Network Information:"
+
+CURRENT_IP=$(ip route get 1 | awk '{print $NF; exit}')
+
+if [ -n "$CURRENT_IP" ]; then
+    echo "The current (potentially temporary) IP address of this ThinClient is: $CURRENT_IP"
+else
+    echo "Could not automatically determine the current IP address."
+fi
+
+echo ""
+echo "!!! CRITICAL NEXT STEPS FOR MIGRATION !!!"
+echo "1. Assign the STATIC, OLD IP address to this device via Netplan or your router settings."
+echo "   (E.g., change the current IP $CURRENT_IP to 192.168.178.10)"
+echo "2. Upload the '.env' file and the volumes backups to this directory."
+echo "3. Run 'docker-compose up -d'."
+echo "-------------------------------------------------------------------"
 
 echo "System setup complete. Please log in again for the Docker group to become active."
