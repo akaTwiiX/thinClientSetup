@@ -1,5 +1,4 @@
-version: '3.7'
-
+name: "smarthome"
 services:
   # --- 1. NGINX PROXY MANAGER (NPM) ---
   nginx-proxy-manager:
@@ -19,10 +18,10 @@ services:
     volumes:
       - ./npm/data:/data
       - ./npm/letsencrypt:/etc/letsencrypt
-    networks:
-      - proxy_net_global
     depends_on:
       - db
+    networks:
+      - webproxy
 
   # --- 2. MARIADB (Database for NPM) ---
   db:
@@ -37,7 +36,7 @@ services:
     volumes:
       - ./db:/var/lib/mysql
     networks:
-      - proxy_net_global
+      - webproxy
 
   # --- 3. PORTAINER (Docker Management Tool) ---
   portainer:
@@ -49,39 +48,29 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer:/data
-    networks:
-      - proxy_net_global
 
   # --- 4. ADGUARD HOME (DNS/DHCP) ---
   adguardhome:
     container_name: adguardhome
     image: adguard/adguardhome
     restart: unless-stopped
-    ports:
-      - '53:53/tcp'
-      - '53:53/udp'
-      - '3000:3000/tcp'
     volumes:
       - ./adguardhome/work:/opt/adguardhome/work
       - ./adguardhome/conf:/opt/adguardhome/conf
-    networks:
-      - proxy_net_global
+    network_mode: host
 
   # --- 5. HOME ASSISTANT (HA) ---
   homeassistant:
     container_name: homeassistant
     image: "ghcr.io/home-assistant/home-assistant:stable"
     restart: unless-stopped
-    ports:
-      - '8123:8123'
     environment:
       TZ: 'Europe/Berlin'
     volumes:
       - ./homeassistant/config:/config
-    networks:
-      - proxy_net_global
+    network_mode: host 
 
+# --- Docker Bridge Networks ---
 networks:
-  proxy_net_global:
+  webproxy:
     driver: bridge
-    name: proxy_net_global
