@@ -69,7 +69,8 @@ services:
     volumes:
       - ./homeassistant/config:/config
       - /run/dbus:/run/dbus:ro
-    network_mode: host 
+    network_mode: host
+    privileged: true
 
 # --- Docker Bridge Networks ---
 networks:
