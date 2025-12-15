@@ -68,6 +68,7 @@ services:
       TZ: 'Europe/Berlin'
     volumes:
       - ./homeassistant/config:/config
+      - /run/dbus:/run/dbus:ro
     network_mode: host 
 
 # --- Docker Bridge Networks ---
